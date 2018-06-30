@@ -12,17 +12,17 @@
 ..todo::
     --
 """
-import enum
 
 
+class Monitors:
+    class Type:
+        CpuMonitor = 'cpu_monitor'
+        GpuMonitor = 'gpu_monitor'
+        MemoryMonitor = 'memory_monitor'
 
-class SampleConstant(enum.Enum):
-    """"
-    | **@author:** Prathyush SP,
-    |
-    | Sample Constants
-    """
-    CONSTANT_1 = enum.auto()
-    CONSTANT_2 = enum.auto()
-    CONSTANT_3 = enum.auto()
-    CONSTANT_4 = enum.auto()
+    class Code:
+        Running = 'running'
+        Error = 'error'
+        Initializing = 'initializing'
+        Disabled = 'disabled'
+        Completed = 'completed'
