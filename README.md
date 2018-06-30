@@ -14,4 +14,4 @@ Bmark - "Benchmark" is a simple yet intutive process monitoring tool, which can 
 3. GPU Usage (Supports only NVidia for now)
 
 #### Architecture:
-![Architecture](http://url/to/img.png)
+![Architecture](https://github.com/kingspp/bmark/blob/master/bmark.png)
