@@ -1,8 +1,6 @@
 sphinx==1.5.3
 sphinx_rtd_theme
 gitchangelog
-pythonbenchmark
-typeguard
 sphinx-autodoc-typehints
 pyyaml
 nose
@@ -12,3 +10,4 @@ pympler
 coverage
 sphinxcontrib-versioning
 munch
+psutil
