@@ -11,7 +11,6 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -20,7 +19,6 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -43,7 +41,6 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*.cover
 .hypothesis/
 
 # Translations
@@ -67,7 +64,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# Jupyter Notebook
+# IPython Notebook
 .ipynb_checkpoints
 
 # pyenv
@@ -76,26 +73,22 @@ target/
 # celery beat schedule file
 celerybeat-schedule
 
-# SageMath parsed files
-*.sage.py
-
 # dotenv
 .env
 
 # virtualenv
-.venv
 venv/
 ENV/
 
 # Spyder project settings
 .spyderproject
-.spyproject
 
 # Rope project settings
 .ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
+.idea/
+sphinx-docs/
+_build/
+*.html
+/cover/
+*.bak
+docs/.coverage
