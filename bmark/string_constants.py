@@ -13,16 +13,16 @@
     --
 """
 import enum
-from enum import auto
 
 
-class SampleConstant(enum):
+
+class SampleConstant(enum.Enum):
     """"
     | **@author:** Prathyush SP,
     |
     | Sample Constants
     """
-    CONSTANT_1 = auto()
-    CONSTANT_2 = auto()
-    CONSTANT_3 = auto()
-    CONSTANT_4 = auto()
+    CONSTANT_1 = enum.auto()
+    CONSTANT_2 = enum.auto()
+    CONSTANT_3 = enum.auto()
+    CONSTANT_4 = enum.auto()

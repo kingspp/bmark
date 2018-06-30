@@ -20,8 +20,8 @@ from typing import Union
 import logging
 import json
 from . import setup_logging
-from module import Singleton
-from module import string_constants as constants
+from bmark import Singleton
+from bmark import string_constants as constants
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,6 @@ class ConfigManager(metaclass=Singleton):
                 'Configuration file path error. Please provide configuration file path: ' + config_file_path, e)
         try:
             self.CommonConfig = CommonConfig(MODULE_CONFIG_DATA['common_config'])
-            self.MetadataConfig = MetadataConfig(MODULE_CONFIG_DATA['metadata_config'])
         except KeyError as ke:
             raise Exception('Key not found. ', ke)
 
