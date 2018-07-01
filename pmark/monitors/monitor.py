@@ -43,7 +43,7 @@ class Monitor(Thread, metaclass=ABCMeta):
         self.monitor_type = monitor_type
         self.monitor_disabled = False
         self.pid = pid
-        self.interval = interval_in_secs
+        self.interval_in_secs = interval_in_secs
         self.process_status = None
         self.psutil_process = None
         self.validate()
@@ -76,7 +76,7 @@ class Monitor(Thread, metaclass=ABCMeta):
                 while self._check_process_status():
                     logger.debug('Running {} . . .'.format(self.monitor_type))
                     self.monitor_running()
-                    time.sleep(self.interval)
+                    time.sleep(self.interval_in_secs)
                 self.monitor_stopped()
                 self.process_status = constants.Monitors.Code.Completed if self.psutil_process.wait() == 0 else constants.Monitors.Code.Error
                 logger.debug('Process Exited. Stopping {}  . . .'.format(self.monitor_type))
@@ -119,8 +119,8 @@ class Monitor(Thread, metaclass=ABCMeta):
         | BenchmarkMonitor
         :return:
         """
-        if self.interval < 1:
-            self.interval = 1
+        if self.interval_in_secs < 1:
+            self.interval_in_secs = 1
             logger.debug('Minimum supported interval is 1 seconds')
         if psutil.pid_exists(self.pid):
             self.psutil_process = psutil.Process(self.pid)

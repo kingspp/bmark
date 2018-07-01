@@ -18,6 +18,8 @@ Benchmark Statistics:
 3.	Physical Processing Power Consumption	List[Float]	 Max Physical Power (CPU) consumed by the run in % - DONE
 """
 
+__all__ = ['BenchmarkUtil', 'monitor']
+
 import json
 from collections import OrderedDict
 from multiprocessing import Process
@@ -28,6 +30,8 @@ import logging
 from pmark.utils import generate_timestamp
 from functools import wraps
 import typing
+from pmark.monitors import CPUMonitor, GPUMonitor, MemoryMonitor
+from functools import partial
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +134,7 @@ class BenchmarkUtil(object):
         if self.deployed_monitors:
             # Initialize Monitors
             self.monitors = [
-                monitor(pid=pid, interval=self.benchmark_interval) if isinstance(monitor, type) else monitor
+                monitor(pid=pid, interval_in_secs=self.benchmark_interval) if isinstance(monitor, type) else monitor
                 for monitor in self.deployed_monitors]
 
             # Start Monitors
@@ -151,7 +155,7 @@ class BenchmarkUtil(object):
             return OrderedDict([(monitor.monitor_type, monitor.monitor_stats()) for monitor in self.monitors])
         return None
 
-    def monitor(self, f):
+    def monitor(self, f=None):
         """
         | **@author:** Prathyush SP
         |
@@ -160,15 +164,18 @@ class BenchmarkUtil(object):
         :return: Function Return Parameter
         """
 
+        if f is None:
+            return partial(monitor)
+
         # noinspection PyUnresolvedReferences
         @wraps(f)
         def wrapped(*args, **kwargs):
             start = time.time()
-            print('Running Benchmark - Training . . .')
+            logger.info('Running Benchmark - Training . . .')
             BaseManager.register('BenchmarkStats', BenchmarkStats)
             manager = BaseManager()
             manager.start()
-            b_stats = manager.BenchmarkStats(self.model_name)
+            b_stats = manager.BenchmarkStats(self.name)
             b_stats.set_function_name(f.__name__)
             b_stats.set_function_annotations(f.__annotations__)
             try:
@@ -181,10 +188,9 @@ class BenchmarkUtil(object):
                 b_stats.set_total_elapsed_time(time.time() - start)
                 fname = self.stats_save_path + '/benchmark_{}_{}.json'.format(
                     b_stats.get_benchmark_name().replace(' ', '_'), b_stats.get_timestamp())
-                b_stats.set_internal_time(json.load(open('/tmp/time.json'))['internal_time'])
                 json.dump(b_stats.info(),
                           open(fname, 'w'), indent=2)
-                print('Benchmark Util - Training completed successfully. Results stored at: {}'.format(fname))
+                logger.info('Benchmark Util - Training completed successfully. Results stored at: {}'.format(fname))
             except ValueError as ve:
                 logger.error('Value Error - {}'.format(ve))
                 raise Exception('Value Error', ve)
@@ -198,3 +204,8 @@ class BenchmarkUtil(object):
         | Cleanup operations after benchmarking
         """
         pass  # pragma: no cover
+
+monitor = BenchmarkUtil(name='',
+                        stats_save_path='/tmp/stats/',
+                        monitors=[CPUMonitor, MemoryMonitor, GPUMonitor],
+                        interval_in_secs=1).monitor
