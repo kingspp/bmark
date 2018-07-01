@@ -1,4 +1,4 @@
-# bmark
+# pmark
 python benchmarking utility
 
 #### Requirements  
@@ -7,14 +7,14 @@ python benchmarking utility
 3. **Tensorflow:** v1.4.0+ 
 
 
-#### What is bmark?
-Bmark - "Benchmark" is a simple yet intutive process monitoring tool, which can monitor,
+#### What is pmark?
+Pmark - "Python Benchmark" is a simple yet intutive process monitoring tool, which can monitor,
 1. CPU Usage
 2. RAM Usage
 3. GPU Usage (Supports only NVidia for now)
 
 #### Architecture:
-![Architecture](https://github.com/kingspp/bmark/blob/master/bmark.png)
+![Architecture](https://github.com/kingspp/pmark/blob/master/pmark.png)
 
 1. A function with required arguments is sent to the utility.
 2. The function is sent as a target for a python Process, which shares statistics using a BaseManager. 

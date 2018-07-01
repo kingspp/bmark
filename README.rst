@@ -1,25 +1,40 @@
-A sample Python project
-=======================
+pmark
+=====
 
-A sample project that exists as an aid to the `Python Packaging User Guide
-<https://packaging.python.org>`_'s `Tutorial on Packaging and Distributing
-Projects <https://packaging.python.org/en/latest/distributing.html>`_.
+python benchmarking utility
 
-This projects does not aim to cover best practices for Python project
-development as a whole. For example, it does not provide guidance or tool
-recommendations for version control, documentation, or testing.
+Requirements
+^^^^^^^^^^^^
 
-----
+1. **OS:** macOS Maverics+ or Ubuntu 14.04+
+2. **Python:** v3.6.0+
+3. **Tensorflow:** v1.4.0+
 
-This is the README file for the project.
+What is pmark?
+^^^^^^^^^^^^^^
 
-The file should use UTF-8 encoding and be written using `reStructuredText
-<http://docutils.sourceforge.net/rst.html>`_. It
-will be used to generate the project webpage on PyPI and will be displayed as
-the project homepage on common code-hosting services, and should be written for
-that purpose.
+Pmark - “Python Benchmark” is a simple yet intutive process monitoring
+tool, which can monitor, 1. CPU Usage 2. RAM Usage 3. GPU Usage
+(Supports only NVidia for now)
 
-Typical contents for this file would include an overview of the project, basic
-usage examples, etc. Generally, including the project changelog in here is not
-a good idea, although a simple "What's New" section for the most recent version
-may be appropriate.
+Architecture:
+^^^^^^^^^^^^^
+
+.. figure:: https://github.com/kingspp/pmark/blob/master/pmark.png
+   :alt: Architecture
+
+   Architecture
+
+1. A function with required arguments is sent to the utility.
+2. The function is sent as a target for a python Process, which shares
+   statistics using a BaseManager.
+3. Required Monitors (CPU/GPU/RAM) are attached to the current process
+   as threads.
+4. The attached monitors are given the main process ``pid`` which helps
+   us in extracting consumption of resources by the process, thereby
+   increasing the accuracy of monitoring process.
+5. Each of the monitors supports interval configuration which can be
+   overridden by benchmark interval.
+6. The threads for each monitor continues to run, untill main process is
+   completed, once done, all the threads, including the main process are
+   closed.
