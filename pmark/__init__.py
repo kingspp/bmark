@@ -12,7 +12,7 @@
 ..todo::
 """
 import os
-from bmark.logging_config_manager import setup_logging
+from pmark.logging_config_manager import setup_logging
 
 BMARK_MODULE_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,9 +37,9 @@ setup_logging(default_path=os.path.join("/".join(__file__.split('/')[:-1]), 'con
 # import multiprocessing
 # multiprocessing.context._force_start_method('spawn')
 
-from bmark.store import MODULE_STORE
-from bmark.config_manager import MODULE_CONFIG, MODULE_CONFIG_DATA
-from bmark.metadata import metadata as md
+from pmark.store import MODULE_STORE
+from pmark.config_manager import MODULE_CONFIG, MODULE_CONFIG_DATA
+from pmark.metadata import metadata as md
 
 __version__ = md.__version__
 

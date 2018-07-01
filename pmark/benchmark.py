@@ -25,7 +25,7 @@ from multiprocessing.managers import BaseManager
 import time
 import os
 import logging
-from bmark.utils import generate_timestamp
+from pmark.utils import generate_timestamp
 from functools import wraps
 import typing
 

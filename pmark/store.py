@@ -12,7 +12,7 @@
 ..todo::
     --
 """
-from bmark import Singleton
+from pmark import Singleton
 from collections import OrderedDict
 import logging
 

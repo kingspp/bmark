@@ -17,7 +17,7 @@ __all__ = ['Monitor']
 from threading import Thread
 import typing
 import psutil
-import bmark.string_constants as constants
+import pmark.string_constants as constants
 import logging
 import time
 from abc import ABCMeta, abstractmethod

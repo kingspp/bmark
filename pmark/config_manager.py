@@ -20,8 +20,8 @@ from typing import Union
 import logging
 import json
 from . import setup_logging
-from bmark import Singleton
-from bmark import string_constants as constants
+from pmark import Singleton
+from pmark import string_constants as constants
 
 logger = logging.getLogger(__name__)
 

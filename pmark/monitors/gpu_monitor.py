@@ -13,11 +13,11 @@
 """
 __all__ = ['GPUMonitor']
 
-from bmark.monitors.monitor import Monitor
+from pmark.monitors.monitor import Monitor
 import typing
-import bmark.string_constants as constants
+import pmark.string_constants as constants
 from collections import OrderedDict
-from bmark.monitors.gpustat import get_gpu_stats
+from pmark.monitors.gpustat import get_gpu_stats
 
 
 class GPUMonitor(Monitor):

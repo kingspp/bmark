@@ -17,7 +17,7 @@ from distutils.core import setup
 from fnmatch import fnmatch
 from Cython.Build import cythonize
 
-from bmark import metadata as md
+from pmark import metadata as md
 
 if __name__ == '__main__':
     pattern = "*.py"

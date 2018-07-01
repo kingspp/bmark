@@ -92,3 +92,4 @@ _build/
 /cover/
 *.bak
 docs/.coverage
+.DS_Store
