@@ -19,7 +19,7 @@ function check_install(){
     *) echo "Check Install Error"; script_error ;;
     esac
     script_fail ${python_exec_val} 'Installation verification failed . . .'
-    cd ~ && log ${PYTHON_COMMAND} -c "import module"; script_fail ${python_exec_val} $? 'Failed to import MODULE'
+    cd ~ && log ${PYTHON_COMMAND} -c "import "${PACKAGE_NAME}; script_fail ${python_exec_val} $? 'Failed to import MODULE'
     script_success
 }
 
@@ -31,7 +31,7 @@ function install_dev(){
 '
     echo "Development Install"
     echo "Updating Resources . . ."
-    echo "Verifying the build . . ." && log ${PYTHON_COMMAND} -c "import module"; script_fail $? 'Package Verification failed . . .'
+    echo "Verifying the build . . ." && log ${PYTHON_COMMAND} -c "import "${PACKAGE_NAME}; script_fail $? 'Package Verification failed . . .'
     echo "Purging previous versions . . ." && log uninstall_all
     log cd ${SCRIPT_PATH} && exec_python "$pip_delete_script"; script_fail $?
     echo "Installing Library . . ."

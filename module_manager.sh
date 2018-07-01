@@ -18,8 +18,8 @@
 DEBUG=true
 PYTHON_COMMAND=python3
 PYTHON_PIP=pip3
-PROJECT_NAME=module
-PACKAGE_NAME=module
+PROJECT_NAME=pmark
+PACKAGE_NAME=pmark
 MODULE_DOCS_PATH=`pwd`/../module-docs/
 SCRIPT_PATH=`pwd`
 python_exec_val=''
