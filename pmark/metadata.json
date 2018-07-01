@@ -1,7 +1,7 @@
 {
   "__name__": "pmark",
   "__version__": "0.0.1",
-  "__description__": "BMark - Simple yet intutive python process benchmarking utility",
+  "__description__": "PMark - Python Benchmark, A Simple yet intuitive python process benchmarking utility",
   "__author__": "Prathyush SP",
   "__email__": "kingspprathyush@gmail.com",
   "__license__": "MIT",
@@ -14,5 +14,5 @@
     "Programming Language :: Python :: 3.6"
   ],
   "__url__": "https://github.com/kingspp/bmark",
-  "__keywords__": "benchmark monitor"
+  "__keywords__": "benchmark monitor python"
 }
