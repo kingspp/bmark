@@ -28,7 +28,8 @@ class Writer(Thread, metaclass=ABCMeta):
     """
 
     """
-    def __init__(self, name:str, writer_type:constants.Writers.Type, interval_in_secs:int):
+
+    def __init__(self, name: str, writer_type: constants.Writers.Type, interval_in_secs: int):
         super().__init__()
         self.name = name
         self.benchmark_util = None
@@ -38,7 +39,6 @@ class Writer(Thread, metaclass=ABCMeta):
         self.psutil_process = None
         self.pid = None
         self.validate()
-
 
     def _check_process_status(self):
         """
@@ -53,8 +53,7 @@ class Writer(Thread, metaclass=ABCMeta):
                         or self.psutil_process.status() == psutil.STATUS_DEAD
                         or self.psutil_process.status() == psutil.STATUS_STOPPED)
 
-
-    def initialize_writer(self, pid:int, benchmark_obj):
+    def initialize_writer(self, pid: int, benchmark_obj):
         """
 
         :param pid:
@@ -83,8 +82,11 @@ class Writer(Thread, metaclass=ABCMeta):
         try:
             while self._check_process_status():
                 self.write(self.benchmark_util._collect_latest_monitor_stats())
-                # self.write(self.benchmark_util.info())
                 time.sleep(self.interval_in_secs)
+        except psutil._exceptions.NoSuchProcess:
+            self.close()
+            self.process_status = constants.Monitors.Code.Completed
+            logger.debug('Completed. Stopping {}'.format(self.type))
         except Exception as e:
             self.close()
             self.process_status = constants.Monitors.Code.Error
@@ -92,11 +94,7 @@ class Writer(Thread, metaclass=ABCMeta):
             print(traceback.format_exc())
             exit()
 
-
-
     def validate(self):
         if self.interval_in_secs < 1:
             self.interval_in_secs = 1
             logger.debug('Minimum supported interval is 1 seconds')
-
-

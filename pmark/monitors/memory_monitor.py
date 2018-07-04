@@ -36,7 +36,7 @@ class MemoryMonitor(Monitor):
         """
         Monitor.__init__(self, pid=pid, interval_in_secs=interval_in_secs,
                          monitor_type=constants.Monitors.Type.MemoryMonitor)
-        self.memory_usage_per_second = []
+        self.memory_usage_per_second = [0]
         self.max_memory_usage = None
 
     def monitor_running(self):

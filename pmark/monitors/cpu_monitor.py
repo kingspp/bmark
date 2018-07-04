@@ -36,7 +36,7 @@ class CPUMonitor(Monitor):
         """
         Monitor.__init__(self, pid=pid, interval_in_secs=interval_in_secs,
                          monitor_type=constants.Monitors.Type.CpuMonitor)
-        self.cpu_usage_per_second = []
+        self.cpu_usage_per_second = [0]
         self.max_cpu_usage = None
 
     def monitor_running(self):

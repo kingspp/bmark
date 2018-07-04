@@ -48,13 +48,13 @@ class GPUMonitor(Monitor):
             self.gpu_total_memory = {g: stats[g]['TotalMemory'] for g in self.gpus}
             self.gpu_power_limit = {g: stats[g]['PowerLimit'] for g in self.gpus}
 
-            self.gpu_memory_usage_per_interval = {g: [] for g in self.gpus}
-            self.gpu_utilization_per_interval = {g: [] for g in self.gpus}
-            self.gpu_power_drawn_per_interval = {g: [] for g in self.gpus}
-            self.gpu_graphics_clock_per_interval = {g: [] for g in self.gpus}
+            self.gpu_memory_usage_per_interval = {g: [0] for g in self.gpus}
+            self.gpu_utilization_per_interval = {g: [0] for g in self.gpus}
+            self.gpu_power_drawn_per_interval = {g: [0] for g in self.gpus}
+            self.gpu_graphics_clock_per_interval = {g: [0] for g in self.gpus}
             self.gpu_sm_clock_per_interval = {g: [] for g in self.gpus}
-            self.gpu_memory_clock_per_interval = {g: [] for g in self.gpus}
-            self.gpu_temperature_per_interval = {g: [] for g in self.gpus}
+            self.gpu_memory_clock_per_interval = {g: [0] for g in self.gpus}
+            self.gpu_temperature_per_interval = {g: [0] for g in self.gpus}
 
             self.gpu_max_memory_usage = None
             self.gpu_max_utilization = None
