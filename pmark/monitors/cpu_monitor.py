@@ -55,6 +55,9 @@ class CPUMonitor(Monitor):
         """
         self.max_cpu_usage = float(max(self.cpu_usage_per_second)) if self.cpu_usage_per_second else 0
 
+    def get_latest(self):
+        return self.cpu_usage_per_second[-1]
+
     def monitor_stats(self):
         """
         | **@author:** Prathyush SP

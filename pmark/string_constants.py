@@ -13,6 +13,11 @@
     --
 """
 
+class Writers:
+    class Type:
+        JsonWriter = 'json_writer'
+        CustomWriter = 'custom_writer'
+        CsvWriter = 'csv_writer'
 
 class Monitors:
     class Type:

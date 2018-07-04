@@ -55,6 +55,9 @@ class MemoryMonitor(Monitor):
         """
         self.max_memory_usage = float(max(self.memory_usage_per_second)) if self.memory_usage_per_second else 0
 
+    def get_latest(self):
+        return self.memory_usage_per_second[-1]
+
     def monitor_stats(self):
         """
         | **@author:** Prathyush SP

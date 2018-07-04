@@ -86,6 +86,10 @@ class Monitor(Thread, metaclass=ABCMeta):
                 logger.debug('Encountered {}. Stopping {}'.format(e, self.monitor_type))
 
     @abstractmethod
+    def get_latest(self):
+        pass
+
+    @abstractmethod
     def monitor_running(self):
         """
         | **@author:** Prathyush SP

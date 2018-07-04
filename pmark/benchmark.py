@@ -51,10 +51,6 @@ class BenchmarkStats(object):
         self.total_elapsed_time = None
         self.monitor_statistics = OrderedDict()
         self.timestamp = generate_timestamp()
-        self.internal_time = None
-
-    def set_internal_time(self, t):
-        self.internal_time = t
 
     def get_timestamp(self):
         return self.timestamp
@@ -94,7 +90,6 @@ class BenchmarkStats(object):
             ('function_annotations', self.function_annotations),
             ('total_elapsed_time (secs)', self.total_elapsed_time),
             ('monitor_statistics', self.monitor_statistics),
-            ('internal_time', self.internal_time)
         ])
 
 
@@ -106,8 +101,9 @@ class BenchmarkUtil(object):
     | Performs Training and Inference Benchmarks
     """
 
-    def __init__(self, name: str, stats_save_path: str,
-                 monitors: typing.List = None, interval_in_secs: int = None):
+    def __init__(self, name: str,
+                 monitors: typing.List = None,
+                 writers: typing.List = None, interval_in_secs: int = None):
         """
 
         :param name: Util Name
@@ -117,13 +113,13 @@ class BenchmarkUtil(object):
         """
         self.name = name
         self.deployed_monitors = monitors
+        self.deployed_writers = writers
         self.monitors = None
+        self.writers = None
         self.benchmark_interval = interval_in_secs
         self.pid = None
-        self.stats_save_path = stats_save_path
-        os.system('mkdir -p ' + self.stats_save_path + '../graphs/')
 
-    def _attach_monitors(self, pid: int):
+    def _attach_monitors_and_writers(self, pid: int, stats):
         """
         | **@author:** Prathyush SP
         |
@@ -137,13 +133,27 @@ class BenchmarkUtil(object):
                 monitor(pid=pid, interval_in_secs=self.benchmark_interval) if isinstance(monitor, type) else monitor
                 for monitor in self.deployed_monitors]
 
+            self.writers = self.deployed_writers
+
+            # Initialize Writers
+            for writer in self.writers:
+                writer.initialize_writer(pid=pid, benchmark_obj=stats)
+
             # Start Monitors
             for monitor in self.monitors:
                 monitor.start()
 
+            # Start Writers
+            for writer in self.writers:
+                writer.start()
+
             # Wait for Monitors
             for monitor in self.monitors:
                 monitor.join()
+
+            # # Wait for Writers
+            for writer in self.writers:
+                writer.join()
 
     def _collect_monitor_stats(self):
         """
@@ -153,6 +163,11 @@ class BenchmarkUtil(object):
         """
         if self.monitors:
             return OrderedDict([(monitor.monitor_type, monitor.monitor_stats()) for monitor in self.monitors])
+        return None
+
+    def _collect_latest_monitor_stats(self):
+        if self.monitors:
+            return OrderedDict([(monitor.monitor_type, monitor.get_latest()) for monitor in self.monitors])
         return None
 
     def monitor(self, f=None):
@@ -182,15 +197,15 @@ class BenchmarkUtil(object):
                 p = Process(target=f, args=())
                 p.start()
                 self.pid = p.pid
-                self._attach_monitors(pid=p.pid)
+                self._attach_monitors_and_writers(pid=p.pid, stats=self)
                 p.join()
                 b_stats.set_monitor_statistics(self._collect_monitor_stats())
                 b_stats.set_total_elapsed_time(time.time() - start)
-                fname = self.stats_save_path + '/benchmark_{}_{}.json'.format(
-                    b_stats.get_benchmark_name().replace(' ', '_'), b_stats.get_timestamp())
-                json.dump(b_stats.info(),
-                          open(fname, 'w'), indent=2)
-                logger.info('Benchmark Util - Training completed successfully. Results stored at: {}'.format(fname))
+                # fname = self.stats_save_path + '/benchmark_{}_{}.json'.format(
+                #     b_stats.get_benchmark_name().replace(' ', '_'), b_stats.get_timestamp())
+                # json.dump(b_stats.info(),
+                #           open(fname, 'w'), indent=2)
+                # logger.info('Benchmark Util - Training completed successfully. Results stored at: {}'.format(fname))
             except ValueError as ve:
                 logger.error('Value Error - {}'.format(ve))
                 raise Exception('Value Error', ve)
@@ -206,6 +221,7 @@ class BenchmarkUtil(object):
         pass  # pragma: no cover
 
 monitor = BenchmarkUtil(name='',
-                        stats_save_path='/tmp/stats/',
+                        # stats_save_path='/tmp/stats/',
                         monitors=[CPUMonitor, MemoryMonitor, GPUMonitor],
-                        interval_in_secs=1).monitor
+                        interval_in_secs=1,
+                        ).monitor

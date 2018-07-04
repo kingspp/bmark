@@ -112,6 +112,9 @@ class GPUMonitor(Monitor):
                 max_dict[g] = max(stats[g])
         return max_dict
 
+    def get_latest(self):
+        return self.gpu_memory_usage_per_interval[-1]
+
     def monitor_stats(self):
         """
         | **@author:** Prathyush SP
