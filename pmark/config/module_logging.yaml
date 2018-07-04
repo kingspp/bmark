@@ -76,12 +76,12 @@ handlers:
         encoding: utf8
 
 root:
-    level: NOTSET
+    level: INFO
     handlers: [console, error_console]
     propogate: no
 
 loggers:
-    module:
+    pmark:
         level: INFO
         handlers: [info_file_handler, error_file_handler, critical_file_handler, debug_file_handler, warn_file_handler]
         propogate: no
