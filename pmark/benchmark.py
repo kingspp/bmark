@@ -18,7 +18,7 @@ Benchmark Statistics:
 3.	Physical Processing Power Consumption	List[Float]	 Max Physical Power (CPU) consumed by the run in % - DONE
 """
 
-__all__ = ['BenchmarkUtil', 'monitor']
+__all__ = ['BenchmarkUtil', 'pmonitor']
 
 import json
 from collections import OrderedDict
@@ -32,6 +32,8 @@ from functools import wraps
 import typing
 from pmark.monitors import CPUMonitor, GPUMonitor, MemoryMonitor
 from functools import partial
+import time
+from pmark.writers import JSONWriter
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +65,9 @@ class BenchmarkStats(object):
 
     def set_monitor_statistics(self, status: OrderedDict):
         self.monitor_statistics = status
+
+    def update_monitor_statistics(self, status: OrderedDict):
+        self.monitor_statistics[time.time()] = status
 
     def get_total_elapsed_time(self):
         return self.total_elapsed_time
@@ -107,7 +112,6 @@ class BenchmarkUtil(object):
         """
 
         :param name: Util Name
-        :param stats_save_path: Stats save path
         :param monitors: List of Monitors
         :param interval_in_secs:
         """
@@ -118,6 +122,12 @@ class BenchmarkUtil(object):
         self.writers = None
         self.benchmark_interval = interval_in_secs
         self.pid = None
+        self.b_stats = None
+        # self.info = self._info()
+    #
+    # def _info(self):
+    #     return __dict__
+
 
     def _attach_monitors_and_writers(self, pid: int, stats):
         """
@@ -166,8 +176,10 @@ class BenchmarkUtil(object):
         return None
 
     def _collect_latest_monitor_stats(self):
+        self.b_stats.update_monitor_statistics(
+            OrderedDict([(monitor.monitor_type, monitor.get_latest()) for monitor in self.monitors]))
         if self.monitors:
-            return OrderedDict([(monitor.monitor_type, monitor.get_latest()) for monitor in self.monitors])
+            return self.b_stats.info()
         return None
 
     def monitor(self, f=None):
@@ -179,8 +191,15 @@ class BenchmarkUtil(object):
         :return: Function Return Parameter
         """
 
+        __dict__ = {'x':10}
+        # def __dict__():
+        #     return {'x':10}
+
         if f is None:
-            return partial(monitor)
+            return partial(self.monitor)
+
+        if f is False:
+            return json.dumps(self.__dict__, default=lambda o: getattr(o, '__dict__', str(o)))
 
         # noinspection PyUnresolvedReferences
         @wraps(f)
@@ -190,20 +209,22 @@ class BenchmarkUtil(object):
             BaseManager.register('BenchmarkStats', BenchmarkStats)
             manager = BaseManager()
             manager.start()
-            b_stats = manager.BenchmarkStats(self.name)
-            b_stats.set_function_name(f.__name__)
-            b_stats.set_function_annotations(f.__annotations__)
+            self.b_stats = manager.BenchmarkStats(self.name)
+            self.b_stats.set_function_name(f.__name__)
+            self.b_stats.set_function_annotations(f.__annotations__)
             try:
                 p = Process(target=f, args=())
                 p.start()
                 self.pid = p.pid
                 self._attach_monitors_and_writers(pid=p.pid, stats=self)
                 p.join()
-                b_stats.set_monitor_statistics(self._collect_monitor_stats())
-                b_stats.set_total_elapsed_time(time.time() - start)
+                # self.b_stats.set_monitor_statistics(self._collect_monitor_stats())
+                self.b_stats.set_total_elapsed_time(time.time() - start)
+                for writer in self.deployed_writers:
+                    writer.write(self.b_stats.info())
                 # fname = self.stats_save_path + '/benchmark_{}_{}.json'.format(
-                #     b_stats.get_benchmark_name().replace(' ', '_'), b_stats.get_timestamp())
-                # json.dump(b_stats.info(),
+                #     self.b_stats.get_benchmark_name().replace(' ', '_'), self.b_stats.get_timestamp())
+                # json.dump(self.b_stats.info(),
                 #           open(fname, 'w'), indent=2)
                 # logger.info('Benchmark Util - Training completed successfully. Results stored at: {}'.format(fname))
             except ValueError as ve:
@@ -220,8 +241,7 @@ class BenchmarkUtil(object):
         """
         pass  # pragma: no cover
 
-monitor = BenchmarkUtil(name='',
-                        # stats_save_path='/tmp/stats/',
-                        monitors=[CPUMonitor, MemoryMonitor, GPUMonitor],
-                        interval_in_secs=1,
-                        ).monitor
+
+pmonitor = BenchmarkUtil(name='PMark_{}'.format(int(time.time())), monitors=[CPUMonitor, MemoryMonitor],
+                         interval_in_secs=1, writers=[
+        JSONWriter(save_path=os.getcwd(), file_name='Benchmark_{}.json'.format(generate_timestamp()))]).monitor

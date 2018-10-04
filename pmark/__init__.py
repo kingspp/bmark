@@ -40,7 +40,7 @@ setup_logging(default_path=os.path.join("/".join(__file__.split('/')[:-1]), 'con
 from pmark.store import MODULE_STORE
 from pmark.config_manager import MODULE_CONFIG, MODULE_CONFIG_DATA
 from pmark.metadata import metadata as md
-from pmark.benchmark import monitor
+from pmark.benchmark import pmonitor
 
 __version__ = md.__version__
 

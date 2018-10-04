@@ -8,8 +8,6 @@
 | CPU Monitor Module
 |
 | **Sphinx Documentation Status:** --
-|
-..todo::
 """
 
 __all__ = ['CPUMonitor']
