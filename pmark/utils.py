@@ -27,3 +27,7 @@ def generate_timestamp() -> str:
     """
     # todo: Prathyush SP: Support for custom formatting
     return str(datetime.datetime.now().replace(microsecond=0)).replace(' ', '_').replace(':', '').replace('-', '')
+
+
+def visualizer(pmonitor):
+    print(pmonitor(False))

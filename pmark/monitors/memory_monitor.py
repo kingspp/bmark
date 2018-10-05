@@ -66,6 +66,6 @@ class MemoryMonitor(Monitor):
         """
         return OrderedDict([
             ('total_memory (GB)', psutil.virtual_memory().total / 2 ** 30),
-            ('memory_usage_per_second (MBps)', self.memory_usage_per_second),
+            # ('memory_usage_per_second (MBps)', self.memory_usage_per_second),
             ('max_memory_usage (MB)', self.max_memory_usage)
         ])

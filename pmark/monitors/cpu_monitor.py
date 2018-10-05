@@ -65,6 +65,6 @@ class CPUMonitor(Monitor):
         return OrderedDict([
             ('cpu_cores', psutil.cpu_count(logical=False)),
             ('cpu_threads', psutil.cpu_count()),
-            ('cpu_usage_per_second (%/s)', self.cpu_usage_per_second),
+            # ('cpu_usage_per_second (%/s)', self.cpu_usage_per_second),
             ('max_cpu_usage (%)', self.max_cpu_usage)
         ])

@@ -52,6 +52,7 @@ class BenchmarkStats(object):
         self.function_annotations = None
         self.total_elapsed_time = None
         self.monitor_statistics = OrderedDict()
+        self.device_statistics = OrderedDict()
         self.timestamp = generate_timestamp()
 
     def get_timestamp(self):
@@ -65,6 +66,9 @@ class BenchmarkStats(object):
 
     def set_monitor_statistics(self, status: OrderedDict):
         self.monitor_statistics = status
+
+    def set_device_statistics(self, stats: OrderedDict):
+        self.device_statistics = stats
 
     def update_monitor_statistics(self, status: OrderedDict):
         self.monitor_statistics[time.time()] = status
@@ -94,6 +98,7 @@ class BenchmarkStats(object):
             ('function_name', self.function_name),
             ('function_annotations', self.function_annotations),
             ('total_elapsed_time (secs)', self.total_elapsed_time),
+            ('device_statistics', self.device_statistics),
             ('monitor_statistics', self.monitor_statistics),
         ])
 
@@ -106,9 +111,9 @@ class BenchmarkUtil(object):
     | Performs Training and Inference Benchmarks
     """
 
-    def __init__(self, name: str,
+    def __init__(self, name: str = None,
                  monitors: typing.List = None,
-                 writers: typing.List = None, interval_in_secs: int = None):
+                 writers: typing.List = [JSONWriter], interval_in_secs: int = 1):
         """
 
         :param name: Util Name
@@ -123,13 +128,8 @@ class BenchmarkUtil(object):
         self.benchmark_interval = interval_in_secs
         self.pid = None
         self.b_stats = None
-        # self.info = self._info()
-    #
-    # def _info(self):
-    #     return __dict__
 
-
-    def _attach_monitors_and_writers(self, pid: int, stats):
+    def _attach_monitors_and_writers(self, pid: int, f_name: str, stats):
         """
         | **@author:** Prathyush SP
         |
@@ -143,7 +143,15 @@ class BenchmarkUtil(object):
                 monitor(pid=pid, interval_in_secs=self.benchmark_interval) if isinstance(monitor, type) else monitor
                 for monitor in self.deployed_monitors]
 
-            self.writers = self.deployed_writers
+            self.writers = [
+                writer() if isinstance(writer, type) else writer
+                for writer in self.deployed_writers]
+
+            for writer in self.writers:
+                writer.save_path = writer.save_path or os.getcwd()
+                writer.file_name = writer.file_name or 'pmonitor_{}_{}_{}.json'.format(f_name, pid,
+                                                                                       generate_timestamp())
+                logger.info('Saving stats in {}/{}'.format(writer.save_path,writer.file_name))
 
             # Initialize Writers
             for writer in self.writers:
@@ -182,57 +190,6 @@ class BenchmarkUtil(object):
             return self.b_stats.info()
         return None
 
-    def monitor(self, f=None):
-        """
-        | **@author:** Prathyush SP
-        |
-        | Value Exception Decorator.
-        :param f: Function
-        :return: Function Return Parameter
-        """
-
-        __dict__ = {'x':10}
-        # def __dict__():
-        #     return {'x':10}
-
-        if f is None:
-            return partial(self.monitor)
-
-        if f is False:
-            return json.dumps(self.__dict__, default=lambda o: getattr(o, '__dict__', str(o)))
-
-        # noinspection PyUnresolvedReferences
-        @wraps(f)
-        def wrapped(*args, **kwargs):
-            start = time.time()
-            logger.info('Running Benchmark - Training . . .')
-            BaseManager.register('BenchmarkStats', BenchmarkStats)
-            manager = BaseManager()
-            manager.start()
-            self.b_stats = manager.BenchmarkStats(self.name)
-            self.b_stats.set_function_name(f.__name__)
-            self.b_stats.set_function_annotations(f.__annotations__)
-            try:
-                p = Process(target=f, args=())
-                p.start()
-                self.pid = p.pid
-                self._attach_monitors_and_writers(pid=p.pid, stats=self)
-                p.join()
-                # self.b_stats.set_monitor_statistics(self._collect_monitor_stats())
-                self.b_stats.set_total_elapsed_time(time.time() - start)
-                for writer in self.deployed_writers:
-                    writer.write(self.b_stats.info())
-                # fname = self.stats_save_path + '/benchmark_{}_{}.json'.format(
-                #     self.b_stats.get_benchmark_name().replace(' ', '_'), self.b_stats.get_timestamp())
-                # json.dump(self.b_stats.info(),
-                #           open(fname, 'w'), indent=2)
-                # logger.info('Benchmark Util - Training completed successfully. Results stored at: {}'.format(fname))
-            except ValueError as ve:
-                logger.error('Value Error - {}'.format(ve))
-                raise Exception('Value Error', ve)
-
-        return wrapped
-
     def clean_up(self):
         """
         | **@author:** Prathyush SP
@@ -242,6 +199,56 @@ class BenchmarkUtil(object):
         pass  # pragma: no cover
 
 
-pmonitor = BenchmarkUtil(name='PMark_{}'.format(int(time.time())), monitors=[CPUMonitor, MemoryMonitor],
-                         interval_in_secs=1, writers=[
-        JSONWriter(save_path=os.getcwd(), file_name='Benchmark_{}.json'.format(generate_timestamp()))]).monitor
+def pmonitor(f, monitors: typing.List = [CPUMonitor, MemoryMonitor], interval_in_secs: int = 1,
+             writers: typing.List = [JSONWriter], ):
+    """
+    | **@author:** Prathyush SP
+    |
+    | Value Exception Decorator.
+    :param f: Function
+    :return: Function Return Parameter
+    """
+
+    __dict__ = {'x': 10}
+    # def __dict__():
+    #     return {'x':10}
+
+    if f is None:
+        return partial(pmonitor)
+
+    # if f is False:
+    #     return json.dumps(self.__dict__, default=lambda o: getattr(o, '__dict__', str(o)))
+
+    # noinspection PyUnresolvedReferences
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        start = time.time()
+        logger.info('Running Benchmark - Training . . .')
+        BaseManager.register('BenchmarkStats', BenchmarkStats)
+        manager = BaseManager()
+        manager.start()
+        butil = BenchmarkUtil(monitors=monitors, interval_in_secs=interval_in_secs, writers=writers)
+
+        butil.b_stats = manager.BenchmarkStats(butil.name)
+        butil.b_stats.set_function_name(f.__name__)
+        butil.b_stats.set_function_annotations(f.__annotations__)
+        try:
+            p = Process(target=f, args=())
+            p.start()
+            butil.pid = p.pid
+            butil._attach_monitors_and_writers(pid=p.pid, stats=butil, f_name=f.__name__)
+            p.join()
+            butil.b_stats.set_device_statistics(butil._collect_monitor_stats())
+            butil.b_stats.set_total_elapsed_time(time.time() - start)
+            for writer in butil.writers:
+                writer.write(butil.b_stats.info())
+            # fname = self.stats_save_path + '/benchmark_{}_{}.json'.format(
+            #     self.b_stats.get_benchmark_name().replace(' ', '_'), self.b_stats.get_timestamp())
+            # json.dump(self.b_stats.info(),
+            #           open(fname, 'w'), indent=2)
+            # logger.info('Benchmark Util - Training completed successfully. Results stored at: {}'.format(fname))
+        except ValueError as ve:
+            logger.error('Value Error - {}'.format(ve))
+            raise Exception('Value Error', ve)
+
+    return wrapped

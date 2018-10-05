@@ -24,3 +24,26 @@ thereby increasing the accuracy of monitoring process.
 5. Each of the monitors supports interval configuration which can be overridden by benchmark interval.
 6. The threads for each monitor continues to run, untill main process is completed, once done, all the threads,
 including the main process are closed. 
+
+
+#### Usage
+
+
+1. Basic Usage
+```python
+from pmark import pmonitor
+import time
+
+
+# Declare function and its body
+@pmonitor
+def random_function():
+    time.sleep(5)
+    x = [i**2 for i in range(1000)]
+    time.sleep(5)
+
+# Call the function
+random_function()
+    
+
+```
