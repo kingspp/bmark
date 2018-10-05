@@ -26,6 +26,11 @@ thereby increasing the accuracy of monitoring process.
 including the main process are closed. 
 
 
+#### Installation
+```bash
+python3 -m pip install pmark
+```
+
 #### Usage
 
 
