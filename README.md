@@ -39,7 +39,6 @@ python3 -m pip install pmark
 from pmark import pmonitor
 import time
 
-
 # Declare function and its body
 @pmonitor
 def random_function():
@@ -51,4 +50,36 @@ def random_function():
 random_function()
     
 
+```
+
+2. Monitor Time
+```python
+from pmark import ftimer
+import time
+
+# Declare function and its body
+@ftimer
+def random_function():
+    time.sleep(5)
+    x = [i**2 for i in range(1000)]
+    time.sleep(5)
+
+# Call the function
+random_function()
+```
+
+3. Monitor Memory
+```python
+from pmark import fmemory
+
+# Declare function and its body
+@fmemory
+def random_function():
+    import time
+    time.sleep(5)
+    x = [i**2 for i in range(1000)]
+    time.sleep(5)
+
+# Call the function
+random_function()
 ```

@@ -18,7 +18,7 @@ Benchmark Statistics:
 3.	Physical Processing Power Consumption	List[Float]	 Max Physical Power (CPU) consumed by the run in % - DONE
 """
 
-__all__ = ['BenchmarkUtil', 'pmonitor']
+__all__ = ['BenchmarkUtil', 'pmonitor', 'ftimer']
 
 import json
 from collections import OrderedDict
@@ -34,6 +34,9 @@ from pmark.monitors import CPUMonitor, GPUMonitor, MemoryMonitor
 from functools import partial
 import time
 from pmark.writers import JSONWriter
+import time
+import datetime
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +154,7 @@ class BenchmarkUtil(object):
                 writer.save_path = writer.save_path or os.getcwd()
                 writer.file_name = writer.file_name or 'pmonitor_{}_{}_{}.json'.format(f_name, pid,
                                                                                        generate_timestamp())
-                logger.info('Saving stats in {}/{}'.format(writer.save_path,writer.file_name))
+                logger.info('Saving stats in {}/{}'.format(writer.save_path, writer.file_name))
 
             # Initialize Writers
             for writer in self.writers:
@@ -204,20 +207,15 @@ def pmonitor(f, monitors: typing.List = [CPUMonitor, MemoryMonitor], interval_in
     """
     | **@author:** Prathyush SP
     |
-    | Value Exception Decorator.
+    | Process Monitor
     :param f: Function
     :return: Function Return Parameter
     """
 
-    __dict__ = {'x': 10}
-    # def __dict__():
-    #     return {'x':10}
+    __dict__ = {}
 
     if f is None:
         return partial(pmonitor)
-
-    # if f is False:
-    #     return json.dumps(self.__dict__, default=lambda o: getattr(o, '__dict__', str(o)))
 
     # noinspection PyUnresolvedReferences
     @wraps(f)
@@ -250,5 +248,51 @@ def pmonitor(f, monitors: typing.List = [CPUMonitor, MemoryMonitor], interval_in
         except ValueError as ve:
             logger.error('Value Error - {}'.format(ve))
             raise Exception('Value Error', ve)
+
+    return wrapped
+
+
+def ftimer(f):
+    """
+    | **@author:** Prathyush SP
+    |
+    | Function Timer
+    :param f: Function
+    :return: Function Return Parameter
+    """
+
+    if f is None:
+        return partial(pmonitor)
+
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        start = time.time()
+        r = f(*args, **kwargs)
+        logger.info(
+            'Time Elapsed for {} is {} Seconds'.format(f.__name__, datetime.timedelta(seconds=time.time() - start)))
+        return r
+
+    return wrapped
+
+
+def fmemory(f):
+    """
+    | **@author:** Prathyush SP
+    |
+    | Memory Consumption Checker
+    :param f: Function
+    :return: Function Return Parameter
+    """
+    if f is None:
+        return partial(pmonitor)
+
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        process = psutil.Process(os.getpid())
+        start_mem = process.memory_info().rss
+        r = f(*args, **kwargs)
+        logger.info(
+            'Memory consumption of  {} is {} Mb'.format(f.__name__, (process.memory_info().rss - start_mem) / 10 ** 6))
+        return r
 
     return wrapped

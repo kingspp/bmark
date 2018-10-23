@@ -41,6 +41,8 @@ from pmark.store import MODULE_STORE
 from pmark.config_manager import MODULE_CONFIG, MODULE_CONFIG_DATA
 from pmark.metadata import metadata as md
 from pmark.benchmark import pmonitor
+from pmark.benchmark import ftimer
+from pmark.benchmark import fmemory
 
 __version__ = md.__version__
 
