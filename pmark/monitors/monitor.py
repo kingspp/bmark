@@ -74,7 +74,7 @@ class Monitor(Thread, metaclass=ABCMeta):
             try:
                 logger.debug('Starting {} . . .'.format(self.monitor_type))
                 while self._check_process_status():
-                    logger.debug('Running {} . . .'.format(self.monitor_type))
+                    logger.debug('{} - Usage {}'.format(self.monitor_type, self.get_latest()))
                     self.monitor_running()
                     time.sleep(self.interval_in_secs)
                 self.monitor_stopped()
