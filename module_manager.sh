@@ -45,8 +45,6 @@ function init_scripts(){
     source ${SCRIPT_PATH}/scripts/uninstall.sh
     source ${SCRIPT_PATH}/scripts/build.sh
     source ${SCRIPT_PATH}/scripts/tests.sh
-
-
 }
 ############################################################################################################################################################
 

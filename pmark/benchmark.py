@@ -231,7 +231,7 @@ def pmonitor(f, monitors: typing.List = [CPUMonitor, MemoryMonitor], interval_in
         butil.b_stats.set_function_name(f.__name__)
         butil.b_stats.set_function_annotations(f.__annotations__)
         try:
-            p = Process(target=f, args=())
+            p = Process(target=f, args=args, kwargs=kwargs)
             p.start()
             butil.pid = p.pid
             butil._attach_monitors_and_writers(pid=p.pid, stats=butil, f_name=f.__name__)
