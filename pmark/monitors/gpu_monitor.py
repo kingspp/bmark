@@ -111,7 +111,14 @@ class GPUMonitor(Monitor):
         return max_dict
 
     def get_latest(self):
-        return {k: v for k, v in self.gpu_memory_usage_per_interval.items()} if self.stats != 'ERROR' else None
+        return {'memory_usage': {k: v[-1] for k, v in self.gpu_memory_usage_per_interval.items()},
+                'gpu_utilization': {k: v[-1] for k, v in self.gpu_utilization_per_interval.items()},
+                'power_usage': {k: v[-1] for k, v in self.gpu_power_drawn_per_interval.items()},
+                'gpu_graphics_clock': {k: v[-1] for k, v in self.gpu_graphics_clock_per_interval.items()},
+                'gpu_sm_clock': {k: v[-1] for k, v in self.gpu_sm_clock_per_interval.items()},
+                'gpu_memory_clock': {k: v[-1] for k, v in self.gpu_memory_clock_per_interval.items()},
+                'gpu_temperature': {k: v[-1] for k, v in self.gpu_temperature_per_interval.items()},
+                } if self.stats != 'ERROR' else None
 
     def monitor_stats(self):
         """
@@ -127,13 +134,13 @@ class GPUMonitor(Monitor):
             ('gpu_devices', self.gpus),
             ('gpu_total_memory (in MiB)', self.gpu_total_memory),
             ('gpu_power_limit (in Watt)', self.gpu_power_limit),
-            ('gpu_memory_usage_per_interval (in MiB)', self.gpu_memory_usage_per_interval),
-            ('gpu_utilization_per_interval (in %)', self.gpu_utilization_per_interval),
-            ('gpu_power_drawn_per_interval (in Watt)', self.gpu_power_drawn_per_interval),
-            ('gpu_graphics_clock_per_interval (in MHz)', self.gpu_graphics_clock_per_interval),
-            ('gpu_sm_clock_per_interval (in MHz)', self.gpu_sm_clock_per_interval),
-            ('gpu_memory_clock_per_interval (in MHz)', self.gpu_memory_clock_per_interval),
-            ('gpu_temperature_per_interval (in degree C)', self.gpu_temperature_per_interval),
+            # ('gpu_memory_usage_per_interval (in MiB)', self.gpu_memory_usage_per_interval),
+            # ('gpu_utilization_per_interval (in %)', self.gpu_utilization_per_interval),
+            # ('gpu_power_drawn_per_interval (in Watt)', self.gpu_power_drawn_per_interval),
+            # ('gpu_graphics_clock_per_interval (in MHz)', self.gpu_graphics_clock_per_interval),
+            # ('gpu_sm_clock_per_interval (in MHz)', self.gpu_sm_clock_per_interval),
+            # ('gpu_memory_clock_per_interval (in MHz)', self.gpu_memory_clock_per_interval),
+            # ('gpu_temperature_per_interval (in degree C)', self.gpu_temperature_per_interval),
             ('gpu_max_memory_usage (in MiB)', self.gpu_max_memory_usage),
             ('gpu_max_utilization (in %)', self.gpu_max_utilization),
             ('gpu_max_power_drawn (in Watt)', self.gpu_max_power_drawn),
