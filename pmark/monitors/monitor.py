@@ -69,7 +69,7 @@ class Monitor(Thread, metaclass=ABCMeta):
         """
         if self.monitor_disabled:
             self.process_status = constants.Monitors.Code.Disabled
-            logger.error('Monitor disabled due to error . . .')
+            logger.error('Monitor {} disabled due to error . . .'.format(self.monitor_type))
         else:
             try:
                 logger.debug('Starting {} . . .'.format(self.monitor_type))

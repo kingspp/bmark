@@ -45,8 +45,8 @@ class MemoryMonitor(Monitor):
         |
         | Initialize / Update monitor variables during runtime
         """
-        # self.memory_usage_per_second.append(self.psutil_process.memory_info().rss / 2 ** 20)
-        pass
+        self.memory_usage_per_second.append(self.psutil_process.memory_info().rss / 2 ** 20)
+
 
     def monitor_stopped(self):
         """
