@@ -106,10 +106,8 @@ class GPUMonitor(Monitor):
         :return:
         """
         max_dict = {}
-        for g in self.gpus:
-            max_dict[g] = None
-            if len(stats[g]) > 0:
-                max_dict[g] = max(stats[g])
+        for k, v in stats.items():
+            max_dict[k] = max(v) if len(v) > 0 else None
         return max_dict
 
     def get_latest(self):

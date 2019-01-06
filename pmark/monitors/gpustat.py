@@ -506,13 +506,16 @@ def get_gpu_stats():
         return 'ERROR'
     gpu_info = gpu_stats.gpus
     for k, v in gpu_info.items():
-        ret_gpu_stats[k] = {'GPU': v.name, 'TotalMemory': v.memory_total,
-                            'UsedMemory': v.memory_used,
-                            'GraphicsClock': v.current_graphics_clock, 'SMClock': v.current_sm_clock,
-                            'MemoryClock': v.current_memory_clock,
+        ret_gpu_stats[k] = {'GPU': v.name, 'TotalMemory': float(v.memory_total),
+                            'UsedMemory': float(v.memory_used),
+                            'GraphicsClock': float(v.current_graphics_clock),
+                            'SMClock': float(v.current_sm_clock),
+                            'MemoryClock': float(v.current_memory_clock),
                             "GPUTemperature": v.temperature,
-                            'GPUUtilization': v.utilization, 'PowerDrawn': v.power_drawn,
-                            'PowerLimit': v.power_max}
+                            'GPUUtilization': float(v.utilization),
+                            'PowerDrawn': float(v.power_drawn),
+                            'PowerLimit': float(v.power_max)
+                            }
     return ret_gpu_stats
 
 
