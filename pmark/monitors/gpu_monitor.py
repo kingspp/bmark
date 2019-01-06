@@ -113,7 +113,7 @@ class GPUMonitor(Monitor):
         return max_dict
 
     def get_latest(self):
-        return self.gpu_memory_usage_per_interval[-1] if self.stats != 'ERROR' else None
+        return {k: v for k, v in self.gpu_memory_usage_per_interval.items()} if self.stats != 'ERROR' else None
 
     def monitor_stats(self):
         """
