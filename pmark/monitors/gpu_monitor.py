@@ -39,14 +39,14 @@ class GPUMonitor(Monitor):
                          monitor_type=constants.Monitors.Type.GpuMonitor)
 
         # Get the stats using nvidia-smi python wrapper
-        stats = get_gpu_stats()
-        self.monitor_disabled = True if stats == 'ERROR' else self.monitor_disabled
+        self.stats = get_gpu_stats()
+        self.monitor_disabled = True if self.stats == 'ERROR' else self.monitor_disabled
         if not self.monitor_disabled:
-            self.number_gpus = len(stats)
-            self.gpus = list(stats.keys())
+            self.number_gpus = len(self.stats)
+            self.gpus = list(self.stats.keys())
 
-            self.gpu_total_memory = {g: stats[g]['TotalMemory'] for g in self.gpus}
-            self.gpu_power_limit = {g: stats[g]['PowerLimit'] for g in self.gpus}
+            self.gpu_total_memory = {g: self.stats[g]['TotalMemory'] for g in self.gpus}
+            self.gpu_power_limit = {g: self.stats[g]['PowerLimit'] for g in self.gpus}
 
             self.gpu_memory_usage_per_interval = {g: [0] for g in self.gpus}
             self.gpu_utilization_per_interval = {g: [0] for g in self.gpus}
@@ -113,7 +113,7 @@ class GPUMonitor(Monitor):
         return max_dict
 
     def get_latest(self):
-        return self.gpu_memory_usage_per_interval[-1]
+        return self.gpu_memory_usage_per_interval[-1] if self.stats != 'ERROR' else None
 
     def monitor_stats(self):
         """
