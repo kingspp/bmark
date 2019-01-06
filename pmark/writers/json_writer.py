@@ -27,7 +27,7 @@ class JSONWriter(Writer):
         self.save_path = save_path
         self.indent = indent
         self.file_name = file_name
-        # os.system('mkdir -p ' + self.save_path)
+        os.system('mkdir -p ' + self.save_path)
 
     def write(self, stats: OrderedDict):
         with open(self.save_path + '/' + self.file_name, 'w') as f:

@@ -203,7 +203,7 @@ class BenchmarkUtil(object):
 
 
 def pmonitor(f, monitors: typing.List = [CPUMonitor, MemoryMonitor], interval_in_secs: int = 1,
-             writers: typing.List = [JSONWriter], ):
+             writers: typing.List = [JSONWriter] ):
     """
     | **@author:** Prathyush SP
     |
@@ -215,7 +215,7 @@ def pmonitor(f, monitors: typing.List = [CPUMonitor, MemoryMonitor], interval_in
     __dict__ = {}
 
     if f is None:
-        return partial(pmonitor)
+        return partial(pmonitor, monitors=monitors, writers=writers, interval_in_secs=interval_in_secs)
 
     # noinspection PyUnresolvedReferences
     @wraps(f)
@@ -226,7 +226,6 @@ def pmonitor(f, monitors: typing.List = [CPUMonitor, MemoryMonitor], interval_in
         manager = BaseManager()
         manager.start()
         butil = BenchmarkUtil(monitors=monitors, interval_in_secs=interval_in_secs, writers=writers)
-
         butil.b_stats = manager.BenchmarkStats(butil.name)
         butil.b_stats.set_function_name(f.__name__)
         butil.b_stats.set_function_annotations(f.__annotations__)
