@@ -52,7 +52,7 @@ class GPUMonitor(Monitor):
             self.gpu_utilization_per_interval = {g: [0] for g in self.gpus}
             self.gpu_power_drawn_per_interval = {g: [0] for g in self.gpus}
             self.gpu_graphics_clock_per_interval = {g: [0] for g in self.gpus}
-            self.gpu_sm_clock_per_interval = {g: [] for g in self.gpus}
+            # self.gpu_sm_clock_per_interval = {g: [] for g in self.gpus}
             self.gpu_memory_clock_per_interval = {g: [0] for g in self.gpus}
             self.gpu_temperature_per_interval = {g: [0] for g in self.gpus}
 
@@ -60,7 +60,7 @@ class GPUMonitor(Monitor):
             self.gpu_max_utilization = None
             self.gpu_max_power_drawn = None
             self.gpu_max_graphics_clock = None
-            self.gpu_max_sm_clock = None
+            # self.gpu_max_sm_clock = None
             self.gpu_max_memory_clock = None
             self.gpu_max_temperature = None
 
@@ -78,7 +78,7 @@ class GPUMonitor(Monitor):
             self.gpu_utilization_per_interval[k].append(v['GPUUtilization'])
             self.gpu_power_drawn_per_interval[k].append(v['PowerDrawn'])
             self.gpu_graphics_clock_per_interval[k].append(v['GraphicsClock'])
-            self.gpu_sm_clock_per_interval[k].append(v['SMClock'])
+            # self.gpu_sm_clock_per_interval[k].append(v['SMClock'])
             self.gpu_memory_clock_per_interval[k].append(v['MemoryClock'])
             self.gpu_temperature_per_interval[k].append(v['GPUTemperature'])
 
@@ -93,7 +93,7 @@ class GPUMonitor(Monitor):
         self.gpu_max_utilization = self._calc_max(stats=self.gpu_utilization_per_interval)
         self.gpu_max_power_drawn = self._calc_max(stats=self.gpu_power_drawn_per_interval)
         self.gpu_max_graphics_clock = self._calc_max(stats=self.gpu_graphics_clock_per_interval)
-        self.gpu_max_sm_clock = self._calc_max(stats=self.gpu_sm_clock_per_interval)
+        # self.gpu_max_sm_clock = self._calc_max(stats=self.gpu_sm_clock_per_interval)
         self.gpu_max_memory_clock = self._calc_max(stats=self.gpu_memory_clock_per_interval)
         self.gpu_max_temperature = self._calc_max(stats=self.gpu_temperature_per_interval)
 
@@ -115,7 +115,7 @@ class GPUMonitor(Monitor):
                 'gpu_utilization': {k: v[-1] for k, v in self.gpu_utilization_per_interval.items()},
                 'power_usage': {k: v[-1] for k, v in self.gpu_power_drawn_per_interval.items()},
                 'gpu_graphics_clock': {k: v[-1] for k, v in self.gpu_graphics_clock_per_interval.items()},
-                'gpu_sm_clock': {k: v[-1] for k, v in self.gpu_sm_clock_per_interval.items()},
+                # 'gpu_sm_clock': {k: v[-1] for k, v in self.gpu_sm_clock_per_interval.items()},
                 'gpu_memory_clock': {k: v[-1] for k, v in self.gpu_memory_clock_per_interval.items()},
                 'gpu_temperature': {k: v[-1] for k, v in self.gpu_temperature_per_interval.items()},
                 } if self.stats != 'ERROR' else None
@@ -145,7 +145,7 @@ class GPUMonitor(Monitor):
             ('gpu_max_utilization (in %)', self.gpu_max_utilization),
             ('gpu_max_power_drawn (in Watt)', self.gpu_max_power_drawn),
             ('gpu_max_graphics_clock (in MHz)', self.gpu_max_graphics_clock),
-            ('gpu_max_sm_clock (in MHz)', self.gpu_max_sm_clock),
+            # ('gpu_max_sm_clock (in MHz)', self.gpu_max_sm_clock),
             ('gpu_max_memory_clock (in MHz)', self.gpu_max_memory_clock),
             ('gpu_max_temperature (in degree C)', self.gpu_max_temperature),
         ])
